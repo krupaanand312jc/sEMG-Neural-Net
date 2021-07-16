@@ -6,7 +6,6 @@ import os
 def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     Read data in from CSV files and format properly for neural networks.
-
     :param data_path: Absolute file path to data.
     :param split_type: If splitting the same dataset, which split to designate this one as.
     :param shuffle: Whether data should be kept in sequential order or shuffled.
@@ -83,7 +82,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
 
     i_ch = 0
     for channel_data, channel_name in channels:
-        X[:, :, i_ch] = channel_data.as_matrix()
+        X[:, :, i_ch] = channel_data.values
         list_of_channels.append(channel_name)
         i_ch += 1
 
@@ -121,7 +120,6 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
 def standardize(train, test):
     """
     Standardize data.
-
     :param train: Train data split.
     :param test: Test data split.
     :return: Normalized data set.
@@ -137,7 +135,6 @@ def standardize(train, test):
 def one_hot(labels, n_class=6):
     """
     One-hot encoding.
-
     :param labels: Labels to encode.
     :param n_class: Number of classes.
     :return: One-hot encoded labels.
@@ -153,7 +150,6 @@ def one_hot(labels, n_class=6):
 def get_batches(X, y, batch_size=100):
     """
     Return a generator for batches.
-
     :param X: Data set.
     :param y: Labels.
     :param batch_size: Batch size.
