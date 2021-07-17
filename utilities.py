@@ -37,18 +37,27 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #
     labels = np.concatenate(
         (
-            [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
+            [[class_id for _ in range(30 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
-
+    #If you want for first channel
     files = [
         'cyl_ch1.csv',
         'hook_ch1.csv',
         'lat_ch1.csv',
         'palm_ch1.csv',
         'spher_ch1.csv',
-        'tip_ch1.csv',
+        'tip_ch1.csv'
     ]
+    #If you want for second channel
+    files = [
+        'cyl_ch2.csv',
+        'hook_ch2.csv',
+        'lat_ch2.csv',
+        'palm_ch2.csv',
+        'spher_ch2.csv',
+        'tip_ch2.csv'
+    ] 
 
     # Merge files of different grip types into one long file, per channel
     channels = []
@@ -84,7 +93,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     if shuffle:
         shuff_labels = np.zeros((len(labels), 1, n_channels))
         shuff_labels[:, 0, 0] = labels
-        # shuff_labels[:, 0, 1] = labels
+        shuff_labels[:, 0, 1] = labels
 
         new_data = np.concatenate([shuff_labels, X], axis=1)
 
