@@ -15,8 +15,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     # Fixed params
     n_class = 6
-    n_channels = 1
-    n_steps = 2996
+    n_steps = 2496
 
     train_subjects = [1, 2, 3, 4, 5]
     test_subjects = [1, 2, 3, 4, 5]
@@ -40,7 +39,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
             [[class_id for _ in range(30 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
-    #If you want for first channel
+
     files = [
         'cyl_ch1.csv',
         'hook_ch1.csv',
@@ -49,7 +48,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         'spher_ch1.csv',
         'tip_ch1.csv'
     ]
-    #If you want for second channel
+
     # files = [
     #     'cyl_ch2.csv',
     #     'hook_ch2.csv',
@@ -57,49 +56,32 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #     'palm_ch2.csv',
     #     'spher_ch2.csv',
     #     'tip_ch2.csv'
-    # ] 
-
-    # Merge files of different grip types into one long file, per channel
-    channels = []
-    for num_channel in range(n_channels):
-
-        all_of_channel = []
-        for file in files[num_channel::n_channels]:
+    # ]
+    for file in files[:]:
 
             gesture_by_subject = []
             for subject in split:
-                full_subject_path = os.path.join(data_path, 'subject_%d' % subject)
+                full_subject_path = os.path.join(data_path, 'male_subject_%d' % subject)
                 full_file_path = os.path.join(full_subject_path, file)
 
                 # Drop last 4 data points to more easily subdivide into layers
-                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2996, 2997, 2998, 2999], axis=1))
+                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
 
-            all_of_channel.append(pd.concat(gesture_by_subject))
 
-        channels.append(
-            (pd.concat(all_of_channel), 'channel_%d' % num_channel)
-        )
 
-    # Initiate array
-    list_of_channels = []
-    X = np.zeros((len(labels), n_steps, n_channels))
+    X = np.zeros((len(labels), n_steps))
 
-    i_ch = 0
-    for channel_data, channel_name in channels:
-        X[:, :, i_ch] = channel_data.values
-        list_of_channels.append(channel_name)
-        i_ch += 1
+    
 
     if shuffle:
-        shuff_labels = np.zeros((len(labels), 1, n_channels))
-        shuff_labels[:, 0, 0] = labels
-        shuff_labels[:, 0, 1] = labels
+        shuff_labels = np.zeros((len(labels), 1))
+        shuff_labels[:, 0] = labels
 
         new_data = np.concatenate([shuff_labels, X], axis=1)
 
-        np.reshape(new_data, (n_steps + 1, len(labels), n_channels))
+        np.reshape(new_data, (n_steps + 1, len(labels)))
         np.random.shuffle(new_data)
-        np.reshape(new_data, (len(labels), n_steps + 1, n_channels))
+        np.reshape(new_data, (len(labels), n_steps + 1))
 
         final_data = new_data[:, 1:, :]
         final_labels = np.array(new_data[:, 0, 0]).astype(int)
@@ -109,16 +91,14 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
             return (
                 final_data[int(len(final_labels) / 2):, :, :],
                 final_labels[int(len(final_labels) / 2):],
-                list_of_channels,
                 final_data[:int(len(final_labels) / 2), :, :],
                 final_labels[:int(len(final_labels) / 2)],
-                list_of_channels
             )
         else:
-            return final_data, final_labels, list_of_channels
+            return final_data, final_labels
 
     else:
-        return X, labels, list_of_channels
+        return X, labels
 
 
 def standardize(train, test):
