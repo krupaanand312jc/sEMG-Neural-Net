@@ -50,14 +50,14 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         'tip_ch1.csv'
     ]
     #If you want for second channel
-    files = [
-        'cyl_ch2.csv',
-        'hook_ch2.csv',
-        'lat_ch2.csv',
-        'palm_ch2.csv',
-        'spher_ch2.csv',
-        'tip_ch2.csv'
-    ] 
+    # files = [
+    #     'cyl_ch2.csv',
+    #     'hook_ch2.csv',
+    #     'lat_ch2.csv',
+    #     'palm_ch2.csv',
+    #     'spher_ch2.csv',
+    #     'tip_ch2.csv'
+    # ] 
 
     # Merge files of different grip types into one long file, per channel
     channels = []
