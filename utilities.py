@@ -14,6 +14,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     # Fixed params
     n_class = 6
+    n_channels = 1
     n_steps = 2496
 
     train_days = [1, 2, 3]
@@ -91,9 +92,9 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     if shuffle:
         shuff_labels = np.zeros((len(labels), 1, n_channels))
         shuff_labels[:, 0, 0] = labels
-        
+        # shuff_labels[:, 0, 1] = labels
 
-        new_data = np.concatenate([shuff_labels, X], axis=0)
+        new_data = np.concatenate([shuff_labels, X], axis=1)
 
         np.reshape(new_data, (n_steps + 1, len(labels), n_channels))
         np.random.shuffle(new_data)
