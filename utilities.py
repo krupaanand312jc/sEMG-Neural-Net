@@ -65,6 +65,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     X = np.zeros((len(labels), n_steps))
 
     X[:, :] = all_of_channel.values
+    print(X)
 
     if shuffle:
         shuff_labels = np.zeros((len(labels), 1))
