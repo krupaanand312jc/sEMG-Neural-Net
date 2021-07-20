@@ -89,7 +89,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         shuff_labels[:, 0] = labels
 
 
-        new_data = np.concatenate([shuff_labels, X], axis=1)
+        new_data = np.concatenate([shuff_labels, X])
 
         np.reshape(new_data, (n_steps + 1, len(labels)))
         np.random.shuffle(new_data)
