@@ -57,7 +57,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
                 full_file_path = os.path.join(full_day_path, file)
 
                 # Drop last 4 data points to more easily subdivide into layers
-                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499]))
 
             all_of_channel.append(pd.concat(gesture_by_day))
 
@@ -71,7 +71,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         shuff_labels[:, 0] = labels
         
 
-        new_data = np.concatenate([shuff_labels, X], axis=1)
+        new_data = np.concatenate([shuff_labels, X])
 
         np.reshape(new_data, (n_steps + 1, len(labels)))
         np.random.shuffle(new_data)
