@@ -6,7 +6,6 @@ import os
 def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     Read data in from CSV files and format properly for neural networks.
-
     :param data_path: Absolute file path to data.
     :param split_type: If splitting the same dataset, which split to designate this one as.
     :param shuffle: Whether data should be kept in sequential order or shuffled.
@@ -15,15 +14,16 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     # Fixed params
     n_class = 6
+    n_channels = 1
     n_steps = 2496
 
-    train_subjects = [1, 2, 3, 4, 5]
-    test_subjects = [1, 2, 3, 4, 5]
+    train_days = [1, 2, 3]
+    test_days = [1, 2, 3]
 
     if split_type == 'train':
-        split = train_subjects
+        split = train_days
     else:
-        split = test_subjects
+        split = test_days
 
     # Assign numeric label to categories:
     #
@@ -36,7 +36,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #
     labels = np.concatenate(
         (
-            [[class_id for _ in range(30 * len(split))] for class_id in range(1, n_class + 1)]
+            [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
 
@@ -46,7 +46,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         'lat_ch1.csv',
         'palm_ch1.csv',
         'spher_ch1.csv',
-        'tip_ch1.csv'
+        'tip_ch1.csv',
     ]
 
     # files = [
@@ -57,54 +57,72 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #     'spher_ch2.csv',
     #     'tip_ch2.csv'
     # ]
-    for file in files[:]:
 
-            gesture_by_subject = []
-            for subject in split:
-                full_subject_path = os.path.join(data_path, 'male_subject_%d' % subject)
-                full_file_path = os.path.join(full_subject_path, file)
+    # Merge files of different grip types into one long file, per channel
+    channels = []
+    for num_channel in range(n_channels):
+
+        all_of_channel = []
+        for file in files[num_channel::n_channels]:
+
+            gesture_by_day = []
+            for day in split:
+                full_day_path = os.path.join(data_path, 'male_day_%d' % day)
+                full_file_path = os.path.join(full_day_path, file)
 
                 # Drop last 4 data points to more easily subdivide into layers
-                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
 
+            all_of_channel.append(pd.concat(gesture_by_day))
 
+        channels.append(
+            (pd.concat(all_of_channel), 'channel_%d' % num_channel)
+        )
 
-    X = np.zeros((len(labels), n_steps))
+    # Initiate array
+    list_of_channels = []
+    X = np.zeros((len(labels), n_steps, n_channels))
 
-    
+    i_ch = 0
+    for channel_data, channel_name in channels:
+        X[:, :, i_ch] = channel_data.values
+        list_of_channels.append(channel_name)
+        i_ch += 1
 
     if shuffle:
-        shuff_labels = np.zeros((len(labels), 1))
-        shuff_labels[:, 0] = labels
+        shuff_labels = np.zeros((len(labels), 1, n_channels))
+        shuff_labels[:, 0, 0] = labels
+        shuff_labels[:, 0, 1] = labels
 
         new_data = np.concatenate([shuff_labels, X], axis=1)
 
-        np.reshape(new_data, (n_steps + 1, len(labels)))
+        np.reshape(new_data, (n_steps + 1, len(labels), n_channels))
         np.random.shuffle(new_data)
-        np.reshape(new_data, (len(labels), n_steps + 1))
+        np.reshape(new_data, (len(labels), n_steps + 1, n_channels))
 
-        final_data = new_data[:, 1:]
-        final_labels = np.array(new_data[:, 0]).astype(int)
+        final_data = new_data[:, 1:, :]
+        final_labels = np.array(new_data[:, 0, 0]).astype(int)
 
         # Return (train, test)
         if sub_split:
             return (
-                final_data[int(len(final_labels) / 2):, :],
+                final_data[int(len(final_labels) / 2):, :, :],
                 final_labels[int(len(final_labels) / 2):],
-                # final_data[:int(len(final_labels) / 2), :],
-                # final_labels[:int(len(final_labels) / 2)],
+                list_of_channels,
+                final_data[:int(len(final_labels) / 2), :, :],
+                final_labels[:int(len(final_labels) / 2)],
+                list_of_channels
             )
         else:
-            return final_data, final_labels
+            return final_data, final_labels, list_of_channels
 
     else:
-        return X, labels
+        return X, labels, list_of_channels
 
 
 def standardize(train, test):
     """
     Standardize data.
-
     :param train: Train data split.
     :param test: Test data split.
     :return: Normalized data set.
@@ -120,7 +138,6 @@ def standardize(train, test):
 def one_hot(labels, n_class=6):
     """
     One-hot encoding.
-
     :param labels: Labels to encode.
     :param n_class: Number of classes.
     :return: One-hot encoded labels.
@@ -136,7 +153,6 @@ def one_hot(labels, n_class=6):
 def get_batches(X, y, batch_size=100):
     """
     Return a generator for batches.
-
     :param X: Data set.
     :param y: Labels.
     :param batch_size: Batch size.
