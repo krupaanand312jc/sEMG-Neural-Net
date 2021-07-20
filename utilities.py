@@ -14,7 +14,6 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     # Fixed params
     n_class = 6
-    n_channels = 2
     n_steps = 2496
 
     train_days = [1, 2, 3]
@@ -42,24 +41,20 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
 
     files = [
         'cyl_ch1.csv',
-        'cyl_ch2.csv',
+        # 'cyl_ch2.csv',
         'hook_ch1.csv',
-        'hook_ch2.csv',
+        # 'hook_ch2.csv',
         'lat_ch1.csv',
-        'lat_ch2.csv',
+        # 'lat_ch2.csv',
         'palm_ch1.csv',
-        'palm_ch2.csv',
+        # 'palm_ch2.csv',
         'spher_ch1.csv',
-        'spher_ch2.csv',
+        # 'spher_ch2.csv',
         'tip_ch1.csv',
-        'tip_ch2.csv'
+        # 'tip_ch2.csv'
     ]
 
-    # Merge files of different grip types into one long file, per channel
-    channels = []
-    for num_channel in range(n_channels):
-
-        all_of_channel = []
+    all_of_channel = []
         for file in files[num_channel::n_channels]:
 
             gesture_by_day = []
@@ -72,49 +67,37 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
 
             all_of_channel.append(pd.concat(gesture_by_day))
 
-        channels.append(
-            (pd.concat(all_of_channel), 'channel_%d' % num_channel)
-        )
-
     # Initiate array
-    list_of_channels = []
-    X = np.zeros((len(labels), n_steps, n_channels))
+    X = np.zeros((len(labels), n_steps))
 
-    i_ch = 0
-    for channel_data, channel_name in channels:
-        X[:, :, i_ch] = channel_data.values
-        list_of_channels.append(channel_name)
-        i_ch += 1
+    X[:, :] = all_of_channel.values
 
     if shuffle:
-        shuff_labels = np.zeros((len(labels), 1, n_channels))
-        shuff_labels[:, 0, 0] = labels
-        shuff_labels[:, 0, 1] = labels
+        shuff_labels = np.zeros((len(labels), 1))
+        shuff_labels[:, 0] = labels
 
         new_data = np.concatenate([shuff_labels, X], axis=1)
 
-        np.reshape(new_data, (n_steps + 1, len(labels), n_channels))
+        np.reshape(new_data, (n_steps + 1, len(labels)))
         np.random.shuffle(new_data)
-        np.reshape(new_data, (len(labels), n_steps + 1, n_channels))
+        np.reshape(new_data, (len(labels), n_steps + 1))
 
-        final_data = new_data[:, 1:, :]
-        final_labels = np.array(new_data[:, 0, 0]).astype(int)
+        final_data = new_data[:, 1:]
+        final_labels = np.array(new_data[:, 0]).astype(int)
 
         # Return (train, test)
         if sub_split:
             return (
-                final_data[int(len(final_labels) / 2):, :, :],
+                final_data[int(len(final_labels) / 2):, :],
                 final_labels[int(len(final_labels) / 2):],
-                list_of_channels,
-                final_data[:int(len(final_labels) / 2), :, :],
+                final_data[:int(len(final_labels) / 2), :],
                 final_labels[:int(len(final_labels) / 2)],
-                list_of_channels
             )
         else:
-            return final_data, final_labels, list_of_channels
+            return final_data, final_labels
 
     else:
-        return X, labels, list_of_channels
+        return X, labels
 
 
 def standardize(train, test):
@@ -126,8 +109,8 @@ def standardize(train, test):
     """
 
     # Standardize train and test
-    X_train = (train - np.mean(train, axis=0)[None, :, :]) / np.std(train, axis=0)[None, :, :]
-    X_test = (test - np.mean(test, axis=0)[None, :, :]) / np.std(test, axis=0)[None, :, :]
+    X_train = (train - np.mean(train, axis=0)[None, :]) / np.std(train, axis=0)[None, :]
+    X_test = (test - np.mean(test, axis=0)[None, :]) / np.std(test, axis=0)[None, :]
 
     return X_train, X_test
 
