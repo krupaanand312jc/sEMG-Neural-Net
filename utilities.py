@@ -85,8 +85,6 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
             return (
                 final_data[int(len(final_labels) / 2):, :],
                 final_labels[int(len(final_labels) / 2):],
-                final_data[:int(len(final_labels) / 2), :],
-                final_labels[:int(len(final_labels) / 2)]
             )
         else:
             return final_data, final_labels
