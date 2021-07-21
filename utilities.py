@@ -15,10 +15,16 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     # Fixed params
     n_class = 6
     n_channels = 1
-    n_steps = 2496
+    # n_steps = 2496 #for Database2
+    n_steps = 2996 #Uncomment this for Database1
 
+    # For the Database 2
     train_days = [1, 2, 3]
     test_days = [1, 2, 3]
+
+    # For the Database 1
+    train_subjects = [1, 2, 3, 4, 5]
+    test_subjects = [1, 2, 3, 4, 5]
 
     if split_type == 'train':
         split = train_days
@@ -34,12 +40,16 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     # spher = 5
     # tip = 6
     #
+
+    n_trails = 30 #30 for Database1 and 100 for Database2
     labels = np.concatenate(
         (
-            [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
+            [[class_id for _ in range(n_trails* len(split))] for class_id in range(1, n_class + 1)]
         )
     )
+    
 
+    # Uncomment this if you want the data from the muscle Flexi Carpi Ulnaris
     # files = [
     #     'cyl_ch1.csv',
     #     'hook_ch1.csv',
@@ -48,6 +58,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #     'spher_ch1.csv',
     #     'tip_ch1.csv'
     #     ]
+    # Uncomment this if you want the data from the muscle Extensor Carpi Radialis
     files = [
         'cyl_ch2.csv',
         'hook_ch2.csv',
@@ -58,6 +69,27 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         ]
     
 
+    # # Merge files of different grip types into one long file, per channel
+    # channels = []
+    # for num_channel in range(n_channels):
+
+    #     all_of_channel = []
+    #     for file in files[num_channel::n_channels]:
+
+    #         gesture_by_day = []
+    #         for day in split:
+    #             full_day_path = os.path.join(data_path, 'male_day_%d' % day)
+    #             full_file_path = os.path.join(full_day_path, file)
+
+    #             # Drop last 4 data points to more easily subdivide into layers
+    #             gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+
+    #         all_of_channel.append(pd.concat(gesture_by_day))
+
+    #     channels.append(
+    #         (pd.concat(all_of_channel), 'channel_%d' % num_channel)
+    #     )
+    
     # Merge files of different grip types into one long file, per channel
     channels = []
     for num_channel in range(n_channels):
@@ -65,15 +97,15 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         all_of_channel = []
         for file in files[num_channel::n_channels]:
 
-            gesture_by_day = []
-            for day in split:
-                full_day_path = os.path.join(data_path, 'male_day_%d' % day)
-                full_file_path = os.path.join(full_day_path, file)
+            gesture_by_subject = []
+            for subject in split:
+                full_subject_path = os.path.join(data_path, 'subject_%d' % subject)
+                full_file_path = os.path.join(full_subject_path, file)
 
                 # Drop last 4 data points to more easily subdivide into layers
-                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2996, 2997, 2998, 2999], axis=1))
 
-            all_of_channel.append(pd.concat(gesture_by_day))
+            all_of_channel.append(pd.concat(gesture_by_subject))
 
         channels.append(
             (pd.concat(all_of_channel), 'channel_%d' % num_channel)
