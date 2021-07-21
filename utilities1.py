@@ -36,7 +36,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #
     labels = np.concatenate(
         (
-            [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
+            [[class_id for _ in range(30 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
     # Uncomment this if you want the data from the muscle Flexi Carpi Ulnaris
