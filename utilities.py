@@ -17,13 +17,13 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     n_channels = 1
     n_steps = 2496
 
-    train_subjects = [1, 2, 3]
-    test_subjects = [1, 2, 3]
+    train_days = [1, 2, 3]
+    test_days = [1, 2, 3]
 
     if split_type == 'train':
-        split = train_subjects
+        split = train_days
     else:
-        split = test_subjects
+        split = test_days
 
     # Assign numeric label to categories:
     #
@@ -39,7 +39,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
             [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
-    # Uncomment this if you want the data from the muscle Flexi Carpi Ulnaris
+    # Uncomment this for the EMG Signal data from the muscle 'Flexi Carpi Ulnaris'
     # files = [
     #     'cyl_ch1.csv',
     #     'hook_ch1.csv',
@@ -48,7 +48,8 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     #     'spher_ch1.csv',
     #     'tip_ch1.csv'
     #     ]
-    # Uncomment this if you want the data from the muscle Extensor Carpi Radialis
+
+    # Uncomment this for the EMG Signal data from the muscle 'Extensor Carpi Radialis'
     files = [
         'cyl_ch2.csv',
         'hook_ch2.csv',

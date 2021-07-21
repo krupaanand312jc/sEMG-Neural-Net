@@ -5,14 +5,14 @@ import scipy.io
 
 
 data_files = [
-    'sEMG_Basic_Hand_movements_upatras\\Database 1\\female_1.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 1\\female_2.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 1\\female_3.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 1\\male_1.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 1\\male_2.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 2\\male_day_1.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 2\\male_day_2.mat',
-    'sEMG_Basic_Hand_movements_upatras\\Database 2\\male_day_3.mat',
+    # 'sEMG_Basic_Hand_movements_upatras\\Database 1\\female_1.mat',
+    # 'sEMG_Basic_Hand_movements_upatras\\Database 1\\female_2.mat',
+    # 'sEMG_Basic_Hand_movements_upatras\\Database 1\\female_3.mat',
+    # 'sEMG_Basic_Hand_movements_upatras\\Database 1\\male_1.mat',
+    # 'sEMG_Basic_Hand_movements_upatras\\Database 1\\male_2.mat',
+    'sEMG_Basic_Hand_movements_upatras\\Database 2\\male_day_1_variance.mat',
+    'sEMG_Basic_Hand_movements_upatras\\Database 2\\male_day_2_variance.mat',
+    'sEMG_Basic_Hand_movements_upatras\\Database 2\\male_day_3_variance.mat',
 ]
 
 for file_path in data_files:
