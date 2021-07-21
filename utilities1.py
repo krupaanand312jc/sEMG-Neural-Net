@@ -15,10 +15,10 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     # Fixed params
     n_class = 6
     n_channels = 1
-    n_steps = 2496
+    n_steps = 2996
 
-    train_subjects = [1, 2, 3]
-    test_subjects = [1, 2, 3]
+    train_subjects = [1, 2, 3, 4, 5]
+    test_subjects = [1, 2, 3, 4, 5]
 
     if split_type == 'train':
         split = train_subjects
@@ -40,23 +40,23 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         )
     )
     # Uncomment this if you want the data from the muscle Flexi Carpi Ulnaris
-    # files = [
-    #     'cyl_ch1.csv',
-    #     'hook_ch1.csv',
-    #     'lat_ch1.csv',
-    #     'palm_ch1.csv',
-    #     'spher_ch1.csv',
-    #     'tip_ch1.csv'
-    #     ]
-    # Uncomment this if you want the data from the muscle Extensor Carpi Radialis
     files = [
-        'cyl_ch2.csv',
-        'hook_ch2.csv',
-        'lat_ch2.csv',
-        'palm_ch2.csv',
-        'spher_ch2.csv',
-        'tip_ch2.csv'
+        'cyl_ch1.csv',
+        'hook_ch1.csv',
+        'lat_ch1.csv',
+        'palm_ch1.csv',
+        'spher_ch1.csv',
+        'tip_ch1.csv'
         ]
+    # Uncomment this if you want the data from the muscle Extensor Carpi Radialis
+    # files = [
+    #     'cyl_ch2.csv',
+    #     'hook_ch2.csv',
+    #     'lat_ch2.csv',
+    #     'palm_ch2.csv',
+    #     'spher_ch2.csv',
+    #     'tip_ch2.csv'
+    #     ]
     
 
     # Merge files of different grip types into one long file, per channel
@@ -66,15 +66,15 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
         all_of_channel = []
         for file in files[num_channel::n_channels]:
 
-            gesture_by_day = []
-            for day in split:
-                full_day_path = os.path.join(data_path, 'male_day_%d' % day)
-                full_file_path = os.path.join(full_day_path, file)
+            gesture_by_subject = []
+            for subject in split:
+                full_subject_path = os.path.join(data_path, 'subject_%d' % subject)
+                full_file_path = os.path.join(full_subject_path, file)
 
                 # Drop last 4 data points to more easily subdivide into layers
-                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2996, 2997, 2998, 2999], axis=1))
 
-            all_of_channel.append(pd.concat(gesture_by_day))
+            all_of_channel.append(pd.concat(gesture_by_subject))
 
         channels.append(
             (pd.concat(all_of_channel), 'channel_%d' % num_channel)
