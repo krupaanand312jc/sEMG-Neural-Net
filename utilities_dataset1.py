@@ -15,7 +15,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     # Fixed params
     n_class = 6
     n_channels = 1
-    n_steps = 2496
+    n_steps = 2996
 
     train_subjects = [1, 2, 3, 4, 5]
     test_subjects = [1, 2, 3, 4, 5]
