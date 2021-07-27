@@ -15,7 +15,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     # Fixed params
     n_class = 6
     n_channels = 1
-    n_steps = 2996
+    n_steps = 2976
 
     train_subjects = [1, 2, 3, 4, 5]
     test_subjects = [1, 2, 3, 4, 5]
@@ -73,7 +73,8 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
                 full_file_path = os.path.join(full_subject_path, file)
 
                 # Drop last 4 data points to more easily subdivide into layers
-                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2996, 2997, 2998, 2999], axis=1))
+                gesture_by_subject.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2976, 2977, 2978, 2979, 2980,
+                 2981, 2982, 2983, 2984, 2985, 2986, 2987, 2988, 2989, 2990, 2991, 2992, 2993, 2994, 2995, 2996, 2997, 2998, 2999], axis=1))
 
             all_of_channel.append(pd.concat(gesture_by_subject))
 
