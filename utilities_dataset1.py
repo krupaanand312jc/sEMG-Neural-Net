@@ -17,8 +17,8 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     n_channels = 1
     n_steps = 2496
 
-    train_subjects = [1, 2, 3]
-    test_subjects = [1, 2, 3]
+    train_subjects = [1, 2, 3, 4, 5]
+    test_subjects = [1, 2, 3, 4, 5]
 
     if split_type == 'train':
         split = train_subjects
