@@ -6,7 +6,7 @@ import os
 def read_data(X, split_type="train", shuffle=False, sub_split=False):
     """
     Read data in from CSV files and format properly for neural networks.
-    :param X: Dataset
+    :param data_path: Absolute file path to data.
     :param split_type: If splitting the same dataset, which split to designate this one as.
     :param shuffle: Whether data should be kept in sequential order or shuffled.
     :param sub_split: Should the data be split in half and returned as a two-tuple.
@@ -40,6 +40,21 @@ def read_data(X, split_type="train", shuffle=False, sub_split=False):
         )
     )
     
+    
+
+    all_of_channel = X
+    
+    
+
+    # Initiate array
+    list_of_channels = []
+    X = np.zeros((len(labels), n_steps, n_channels))
+
+    i_ch = 0
+    for channel_data, channel_name in all_of_channel:
+        X[:, :, i_ch] = channel_data.values
+        list_of_channels.append(channel_name)
+        i_ch += 1
 
     if shuffle:
         shuff_labels = np.zeros((len(labels), 1, n_channels))
