@@ -89,7 +89,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
                    cyl_day3, hook_day3, lat_day3, palm_day3, spher_day3, tip_day3])
 
     # Drop last 4 data points to more easily subdivide into layers
-    channels = np.delete(X, [2496, 2497, 2498, 2499], 1)
+    channels = np.delete(channels, [2496, 2497, 2498, 2499], 1)
 
     channels = channels.tolist()
 
