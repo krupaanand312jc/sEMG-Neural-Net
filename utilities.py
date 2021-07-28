@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-def read_data(data_path, split_type="train", shuffle=False, sub_split=False, X):
+def read_data(X, data_path, split_type="train", shuffle=False, sub_split=False):
     """
     Read data in from CSV files and format properly for neural networks.
     :param data_path: Absolute file path to data.
