@@ -89,7 +89,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
 
     i_ch = 0
     for channel_data, channel_name in channels:
-        X[:, :, i_ch] = channel_data.values
+        X[:, :, i_ch] = np.array(channel_data)
         list_of_channels.append(channel_name)
         i_ch += 1
 
