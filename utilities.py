@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-def read_data(X, split_type="train", shuffle=False, sub_split=False):
+def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
     """
     Read data in from CSV files and format properly for neural networks.
     :param data_path: Absolute file path to data.
@@ -39,10 +39,47 @@ def read_data(X, split_type="train", shuffle=False, sub_split=False):
             [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
-    
+    # Uncomment this for the EMG Signal data from the muscle 'Flexi Carpi Ulnaris'
+    # files = [
+    #     'cyl_ch1.csv',
+    #     'hook_ch1.csv',
+    #     'lat_ch1.csv',
+    #     'palm_ch1.csv',
+    #     'spher_ch1.csv',
+    #     'tip_ch1.csv'
+    #     ]
+
+    # Uncomment this for the EMG Signal data from the muscle 'Extensor Carpi Radialis'
+    files = [
+        'cyl_ch2.csv',
+        'hook_ch2.csv',
+        'lat_ch2.csv',
+        'palm_ch2.csv',
+        'spher_ch2.csv',
+        'tip_ch2.csv'
+        ]
     
 
-    all_of_channel = X
+    # Merge files of different grip types into one long file, per channel
+    channels = []
+    for num_channel in range(n_channels):
+
+        all_of_channel = []
+        for file in files[num_channel::n_channels]:
+
+            gesture_by_day = []
+            for day in split:
+                full_day_path = os.path.join(data_path, 'male_day_%d' % day)
+                full_file_path = os.path.join(full_day_path, file)
+
+                # Drop last 4 data points to more easily subdivide into layers
+                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+
+            all_of_channel.append(pd.concat(gesture_by_day))
+
+        channels.append(
+            (pd.concat(all_of_channel), 'channel_%d' % num_channel)
+        )
     
     
 
@@ -51,7 +88,7 @@ def read_data(X, split_type="train", shuffle=False, sub_split=False):
     X = np.zeros((len(labels), n_steps, n_channels))
 
     i_ch = 0
-    for channel_data, channel_name in all_of_channel:
+    for channel_data, channel_name in channels:
         X[:, :, i_ch] = channel_data.values
         list_of_channels.append(channel_name)
         i_ch += 1
