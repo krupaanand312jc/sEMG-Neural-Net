@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import os
-from scipy import io
 
 
 def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
@@ -40,80 +39,36 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
             [[class_id for _ in range(100 * len(split))] for class_id in range(1, n_class + 1)]
         )
     )
-    # Uncomment this for the EMG Signal data from the muscle 'Flexi Carpi Ulnaris'
-    # files = [
-    #     'cyl_ch1.csv',
-    #     'hook_ch1.csv',
-    #     'lat_ch1.csv',
-    #     'palm_ch1.csv',
-    #     'spher_ch1.csv',
-    #     'tip_ch1.csv'
-    #     ]
 
-    # Uncomment this for the EMG Signal data from the muscle 'Extensor Carpi Radialis'
-    # files = [
-    #     'cyl_ch2.csv',
-    #     'hook_ch2.csv',
-    #     'lat_ch2.csv',
-    #     'palm_ch2.csv',
-    #     'spher_ch2.csv',
-    #     'tip_ch2.csv'
-    #     ]
-    data1 = io.loadmat('/content/sEMG-Neural-Net/sEMG_Basic_Hand_movements_upatras/Database 2/male_day_1.mat')
-    data2 = io.loadmat('/content/sEMG-Neural-Net/sEMG_Basic_Hand_movements_upatras/Database 2/male_day_2.mat')
-    data3 = io.loadmat('/content/sEMG-Neural-Net/sEMG_Basic_Hand_movements_upatras/Database 2/male_day_3.mat')
-
-    cyl_day1 = data1['cyl_ch2']
-    hook_day1 = data1['hook_ch2']
-    tip_day1 = data1['tip_ch2']
-    palm_day1 = data1['palm_ch2']
-    spher_day1 = data1['spher_ch2']
-    lat_day1 = data1['lat_ch2']
-
-    cyl_day2 = data2['cyl_ch2']
-    hook_day2 = data2['hook_ch2']
-    tip_day2 = data2['tip_ch2']
-    palm_day2 = data2['palm_ch2']
-    spher_day2 = data2['spher_ch2']
-    lat_day2 = data2['lat_ch2']
-
-    cyl_day3 = data3['cyl_ch2']
-    hook_day3 = data3['hook_ch2']
-    tip_day3 = data3['tip_ch2']
-    palm_day3 = data3['palm_ch2']
-    spher_day3 = data3['spher_ch2']
-    lat_day3 = data3['lat_ch2']
-
-    channels = np.vstack([cyl_day1, hook_day1, lat_day1, palm_day1, spher_day1, tip_day1,
-                   cyl_day2, hook_day2, lat_day2, palm_day2, spher_day2, tip_day2,
-                   cyl_day3, hook_day3, lat_day3, palm_day3, spher_day3, tip_day3])
-
-    # Drop last 4 data points to more easily subdivide into layers
-    channels = np.delete(channels, [2496, 2497, 2498, 2499], 1)
-
-    channels = channels.tolist()
+    files = [
+        'cyl_ch2.csv',
+        'hook_ch2.csv',
+        'lat_ch2.csv',
+        'palm_ch2.csv',
+        'spher_ch2.csv',
+        'tip_ch2.csv'
+    ]
 
     # Merge files of different grip types into one long file, per channel
-    # channels = []
-    # for num_channel in range(n_channels):
+    channels = []
+    for num_channel in range(n_channels):
 
-    #     all_of_channel = []
-    #     for file in files[num_channel::n_channels]:
+        all_of_channel = []
+        for file in files[num_channel::n_channels]:
 
-    #         gesture_by_day = []
-    #         for day in split:
-    #             full_day_path = os.path.join(data_path, 'male_day_%d' % day)
-    #             full_file_path = os.path.join(full_day_path, file)
-    #             # Drop last 4 data points to more easily subdivide into layers
-    #             gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
+            gesture_by_day = []
+            for day in split:
+                full_day_path = os.path.join(data_path, 'male_day_%d' % day)
+                full_file_path = os.path.join(full_day_path, file)
 
-    #         all_of_channel.append(pd.concat(gesture_by_day))
+                # Drop last 4 data points to more easily subdivide into layers
+                gesture_by_day.append(pd.read_csv(full_file_path,  header=None).drop(labels=[2496, 2497, 2498, 2499], axis=1))
 
-    #     channels.append(
-    #         (pd.concat(all_of_channel), 'channel_%d' % num_channel)
-    #     )
-    
-    
+            all_of_channel.append(pd.concat(gesture_by_day))
+
+        channels.append(
+            (pd.concat(all_of_channel), 'channel_%d' % num_channel)
+        )
 
     # Initiate array
     list_of_channels = []
@@ -121,7 +76,7 @@ def read_data(data_path, split_type="train", shuffle=False, sub_split=False):
 
     i_ch = 0
     for channel_data, channel_name in channels:
-        X[:, :, i_ch] = channel_data.values
+        X[:, :, i_ch] = channel_data.as_matrix()
         list_of_channels.append(channel_name)
         i_ch += 1
 
